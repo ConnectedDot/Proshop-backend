@@ -1,8 +1,10 @@
 const path = require("path");
 const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
-const cors = require("cors"); // Import the cors middleware
+const cors = require("cors");
 const colors = require("colors");
 const connectDB = require("./config/db");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
@@ -28,6 +30,8 @@ app.use("/api/v1/orders", orderRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
+
+const MONGO_URI = process.env.MONGO_URI;
 
 app.get("/api/config/paypal", (req, res) => {
   res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
