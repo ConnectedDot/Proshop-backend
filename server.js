@@ -1,30 +1,33 @@
 const path = require("path");
 const express = require("express");
-const app = express();
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors"); // Import the cors middleware
-dotenv.config();
+const colors = require("colors");
 const connectDB = require("./config/db");
+const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+dotenv.config({ path: "./config/.env" });
+
+connectDB();
+
+// Routes import for products and users
 const productRoutes = require("./routes/productRoutes");
 const userRoutes = require("./routes/userRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
-const { notFound, errorHandler } = require("./middleware/errorMiddleware");
-
-const PORT = process.env.PORT || 5000;
-
-connectDB();
 
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/api/products", productRoutes);
-app.use("/api/upload", uploadRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/orders", orderRoutes);
+app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/upload", uploadRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/orders", orderRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.get("/api/config/paypal", (req, res) => {
   res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
@@ -38,27 +41,32 @@ app.use((req, res, next) => {
   next();
 });
 
-if (process.env.NODE_ENV === "production") {
-  const __dirname = path.resolve();
-  app.use("/uploads", express.static("/var/data/uploads"));
-  app.use(express.static(path.join(__dirname, "/frontend/build")));
+//Set static folder
+app.use(express.static(path.join(__dirname, "public")));
 
-  app.get("*", (req, res) =>
-    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"))
-  );
-} else {
-  const __dirname = path.resolve();
-  app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
-  app.get("/", (req, res) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.send("API is running....");
+// app.use("*", function (req, res) {
+//   res.status(404).json({ message: "route does not exist" });
+// });
+app.get("/*", function (req, res) {
+  res.sendFile(path.join(__dirname, "public/index.html"), function (err) {
+    if (err) {
+      res.status(500).send(err);
+    }
   });
-}
+});
 
-app.use(notFound);
-app.use(errorHandler);
-
-app.listen(
+const PORT = process.env.PORT || 5000;
+const server = app.listen(
   PORT,
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+  console.log(
+    `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow
+  )
 );
+
+//Handle unhandled promise rejections
+process.on("unhandledRejection", (err, promise) => {
+  console.log(`Error: ${err.message}`.red);
+  // close Server & exit Process
+
+  server.close(() => process.exit(1));
+});
