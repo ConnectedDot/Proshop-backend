@@ -51,12 +51,8 @@ app.use(express.static(path.join(__dirname, "public")));
 // app.use("*", function (req, res) {
 //   res.status(404).json({ message: "route does not exist" });
 // });
-app.get("/*", function (req, res) {
-  res.sendFile(path.join(__dirname, "public/index.html"), function (err) {
-    if (err) {
-      res.status(500).send(err);
-    }
-  });
+app.get("/", (req, res) => {
+  res.send("Hello, world!");
 });
 
 const PORT = process.env.PORT || 5000;
