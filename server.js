@@ -1,5 +1,6 @@
 const path = require("path");
 const express = require("express");
+const app = express();
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors"); // Import the cors middleware
@@ -15,8 +16,6 @@ const PORT = process.env.PORT || 5000;
 
 connectDB();
 
-const app = express();
-
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,9 +26,10 @@ app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 
-app.get("/api/config/paypal", (req, res) =>
-  res.send({ clientId: process.env.PAYPAL_CLIENT_ID })
-);
+app.get("/api/config/paypal", (req, res) => {
+  res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
+  res.header("Access-Control-Allow-Origin", "*");
+});
 
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();
@@ -43,6 +43,7 @@ if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();
   app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
   app.get("/", (req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
     res.send("API is running....");
   });
 }
