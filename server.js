@@ -48,9 +48,10 @@ app.use((req, res, next) => {
 //Set static folder
 app.use(express.static(path.join(__dirname, "public")));
 
-// app.use("*", function (req, res) {
-//   res.status(404).json({ message: "route does not exist" });
-// });
+app.use("*", function (req, res) {
+  res.status(404).json({ message: "route does not exist" });
+});
+
 app.get("/", (req, res) => {
   res.send("Hello, world!");
 });
