@@ -35,7 +35,6 @@ const MONGO_URI = process.env.MONGO_URI;
 
 app.get("/api/config/paypal", (req, res) => {
   res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
-  res.header("Access-Control-Allow-Origin", "*");
 });
 
 app.use((req, res, next) => {
@@ -45,15 +44,19 @@ app.use((req, res, next) => {
   next();
 });
 
-//Set static folder
+// Set static folder
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("*", function (req, res) {
-  res.status(404).json({ message: "route does not exist" });
+app.get("/", function (req, res) {
+  res.status(200).json({ message: "Welcome to proshop API!" });
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello, world!");
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, "public/index.html"), function (err) {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
 });
 
 const PORT = process.env.PORT || 5000;
