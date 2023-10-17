@@ -1,14 +1,14 @@
 const path = require("path");
 const express = require("express");
-const app = express();
-const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
+dotenv.config();
+const connectDB = require("./config/db");
+const app = express();
+const mongoose = require("mongoose");
 const cors = require("cors");
 const colors = require("colors");
-const connectDB = require("./config/db");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
-dotenv.config({ path: "./config/.env" });
 
 connectDB();
 
