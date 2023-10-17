@@ -7,7 +7,7 @@ function addDecimals(num) {
 // Our addDecimals function expects a number and returns a string, so it is not
 // correct to call it passing a string as the argument.
 
-export function calcPrices(orderItems) {
+function calcPrices(orderItems) {
   // Calculate the items price in whole number (pennies) to avoid issues with
   // floating point number calculations
   const itemsPrice = orderItems.reduce(
@@ -32,3 +32,5 @@ export function calcPrices(orderItems) {
     totalPrice: addDecimals(totalPrice),
   };
 }
+
+module.exports = calcPrices;

@@ -1,8 +1,11 @@
-import asyncHandler from "../middleware/asyncHandler.js";
-import Order from "../models/orderModel.js";
-import Product from "../models/productModel.js";
-import { calcPrices } from "../utils/calcPrices.js";
-import { verifyPayPalPayment, checkIfNewTransaction } from "../utils/paypal.js";
+const asyncHandler = require("../middleware/asyncHandler.js");
+const Order = "../models/orderModel.js";
+const Product = require("../models/productModel.js");
+const { calcPrices } = require("../utils/calcPrices.js");
+const {
+  verifyPayPalPayment,
+  checkIfNewTransaction,
+} = require("../utils/paypal.js");
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -148,7 +151,7 @@ const getOrders = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
-export {
+module.exports = {
   addOrderItems,
   getMyOrders,
   getOrderById,
